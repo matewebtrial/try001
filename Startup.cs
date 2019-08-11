@@ -6,6 +6,7 @@ using NLua;
 using System;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ConsoleAppCoreWeb
 {
@@ -26,8 +27,13 @@ namespace ConsoleAppCoreWeb
             //System.Console.Write(res);
             int i = 0;
             var stopwatch = Stopwatch.StartNew();
-            app.Run(context => GetString(context, state, ref i));
+            var backgroundTask = Task.Run(() => WebTask(app, state, i));ííííí
+        }
 
+        private static int WebTask(IApplicationBuilder app, Lua state, int i)
+        {
+            app.Run(context => GetString(context, state, ref i));
+            return i;
         }
 
         private static System.Threading.Tasks.Task GetString(HttpContext context, Lua state, ref int i)
