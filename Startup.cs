@@ -27,7 +27,7 @@ namespace ConsoleAppCoreWeb
             //System.Console.Write(res);
             int i = 0;
             var stopwatch = Stopwatch.StartNew();
-            var backgroundTask = Task.Run(() => WebTask(app, state, i));ííííí
+            var backgroundTask = Task.Run(() => WebTask(app, state, i));
         }
 
         private static int WebTask(IApplicationBuilder app, Lua state, int i)
