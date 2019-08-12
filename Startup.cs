@@ -7,6 +7,10 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Data;
+using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
+using Data;
 
 namespace ConsoleAppCoreWeb
 {
@@ -15,16 +19,14 @@ namespace ConsoleAppCoreWeb
         public Startup()
         {
         }
-
         public IConfiguration Configuration { get; }
         public static DateTime Now { get; }
+
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             Lua state = new Lua();
             app.UseStatusCodePages();
 
-            //string res = (state.DoFile(@"C:\test.lua")[0]).ToString();
-            //System.Console.Write(res);
             int i = 0;
             var stopwatch = Stopwatch.StartNew();
             var backgroundTask = Task.Run(() => WebTask(app, state, i));
@@ -41,9 +43,27 @@ namespace ConsoleAppCoreWeb
             return context.Response.WriteAsync((++i).ToString() + " " + ReadFromLua(state, i));
         }
 
-        private static string ReadFromLua(Lua state,int i)
+        private static string ReadFromLua(Lua state, int i)
         {
-            return state.DoFile("C:\\test.lua")[0].ToString();
+            return state.DoFile("test.lua")[0].ToString();
+        }
+        public string[] Query(string DB, string query)
+        {
+            string[] res= new string[Int16.MaxValue];
+            var dbCon = DBConnection.Instance();
+            dbCon.DatabaseName = DB;
+            if (dbCon.IsConnect())
+            {
+                var cmd = new MySqlCommand(query, dbCon.Connection);
+                var reader = cmd.ExecuteReader();
+                Int16 i = 0;
+                while (reader.Read())
+                {
+                    res[i] = reader.GetString(i++);
+                }
+                dbCon.Close();
+            }
+            return res;
         }
     }
 }   
